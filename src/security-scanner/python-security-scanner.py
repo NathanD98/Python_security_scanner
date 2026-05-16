@@ -137,13 +137,13 @@ def scan_directory(directory_path: str, exclude_dirs: Set[str]) -> int:
         print(f"\n File: {file_path}")
         print(f"   {'Line':<8} | {'Detector/Plugin Engine':<30}")
         print("   " + "-" * 45)
-        
+
         for secret in secret_list:
             total_findings += 1
             line_num = secret.get("line_number", "Unknown")
             plugin_type = secret.get("type", "Unknown Detector")
             print(f"   {f'L{line_num}':<8} | {plugin_type:<30}")
-            
+
     print("\n" + "=" * 60)
     print(f"Audit concluded with {total_findings} vulnerabilities identified.")
     print("=" * 60)

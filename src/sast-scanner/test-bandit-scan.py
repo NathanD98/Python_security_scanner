@@ -1,42 +1,42 @@
 """Unit Test Suite for the SAST Syntax Security Gate.
 
-This module establishes a deterministic, automated test matrix for validating the 
-behavior of the static application security testing (SAST) control logic. It provides 
-isolated regression testing to verify that the security gate responds accurately to 
+This module establishes a deterministic, automated test matrix for validating the
+behavior of the static application security testing (SAST) control logic. It provides
+isolated regression testing to verify that the security gate responds accurately to
 varying structural code profiles, dependency configurations, and environment states.
 
 Test Suite Architecture & Dynamic Dependency Resolution:
-    Because security scanners frequently utilize custom filenames or reside inside deep 
-    nested project subdirectories, standard static python import hooks (e.g., 'import 
-    bandit_scan') will routinely fail with 'ModuleNotFoundError' when executed from a 
-    project's root directory. 
-    
-    To ensure platform-agnostic portability, this test harness implements a two-stage 
+    Because security scanners frequently utilize custom filenames or reside inside deep
+    nested project subdirectories, standard static python import hooks (e.g., 'import
+    bandit_scan') will routinely fail with 'ModuleNotFoundError' when executed from a
+    project's root directory.
+
+    To ensure platform-agnostic portability, this test harness implements a two-stage
     dynamic bootstrap routine:
-        1. Explicit Location Discovery: Computes absolute paths at runtime relative to 
+        1. Explicit Location Discovery: Computes absolute paths at runtime relative to
            the executing test file using '__file__'.
-        2. Programmatic Module Ingestion: Leverages low-level 'importlib.util' engines 
-           to dynamically map, compile, and inject the source logic straight into the 
-           active global module dictionary ('sys.modules'). This effectively neutralizes 
+        2. Programmatic Module Ingestion: Leverages low-level 'importlib.util' engines
+           to dynamically map, compile, and inject the source logic straight into the
+           active global module dictionary ('sys.modules'). This effectively neutralizes
            directory path conflicts and bypasses Python naming constraints on filenames.
 
 Mocking Paradigms & Process Isolation:
-    To preserve execution speed and guarantee repeatability, the suite enforces a 
-    strict zero-external-dependency requirement. By using the '@patch' decorator, 
-    low-level system infrastructure calls like 'subprocess.run' are intercepted and 
-    swapped out for a 'MagicMock' instance. This allows the test suite to simulate raw 
-    system return codes, standard output streams (stdout), and error outputs (stderr) 
+    To preserve execution speed and guarantee repeatability, the suite enforces a
+    strict zero-external-dependency requirement. By using the '@patch' decorator,
+    low-level system infrastructure calls like 'subprocess.run' are intercepted and
+    swapped out for a 'MagicMock' instance. This allows the test suite to simulate raw
+    system return codes, standard output streams (stdout), and error outputs (stderr)
     instantaneously without spawning physical subprocesses or modifying real code.
 
 Assertion Matrix & Signal Interception:
-    Since the target scanner utility terminates execution flow using 'sys.exit()', 
-    invoking it inside a generic test runner would immediately kill the entire test 
-    thread. To circumvent this, assertions are encapsulated within a 
-    'self.assertRaises(SystemExit)' context manager. This traps the execution 
-    termination signal, extracts the underlying integer exit status code, and validates 
+    Since the target scanner utility terminates execution flow using 'sys.exit()',
+    invoking it inside a generic test runner would immediately kill the entire test
+    thread. To circumvent this, assertions are encapsulated within a
+    'self.assertRaises(SystemExit)' context manager. This traps the execution
+    termination signal, extracts the underlying integer exit status code, and validates
     it against the expected DevSecOps pipeline outcomes:
         * Exit Code 0: Verified clean pass when the source code contains zero code smells.
-        * Exit Code 1: Verified hard-fail gate behavior when vulnerabilities or syntax 
+        * Exit Code 1: Verified hard-fail gate behavior when vulnerabilities or syntax
           errors are intercepted.
 """
 

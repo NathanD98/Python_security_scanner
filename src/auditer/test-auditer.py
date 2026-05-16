@@ -1,41 +1,41 @@
 """Unit Test Suite for the Dependency Security Gate Utility.
 
-This module establishes a deterministic, automated test matrix for validating the 
-behavior of the software supply chain dependency auditing logic. It provides 
-isolated unit tests to guarantee that the security gate responds accurately to 
+This module establishes a deterministic, automated test matrix for validating the
+behavior of the software supply chain dependency auditing logic. It provides
+isolated unit tests to guarantee that the security gate responds accurately to
 varying package risk profiles, uninstalled system binaries, and environmental flags.
 
 Test Suite Architecture & Dynamic Dependency Ingestion:
-    To support diverse repository layout configurations and completely eliminate 
-    pathing errors ('ModuleNotFoundError') during execution from the project root 
-    or inside automation containers, this suite bypasses static top-level imports. 
-    
-    It calculates absolute paths dynamically at runtime relative to the test file via 
-    '__file__', constructs a precise pointer to 'pip_auditer.py', and programmatically 
-    registers the module inside Python's core tracking network ('sys.modules'). This 
+    To support diverse repository layout configurations and completely eliminate
+    pathing errors ('ModuleNotFoundError') during execution from the project root
+    or inside automation containers, this suite bypasses static top-level imports.
+
+    It calculates absolute paths dynamically at runtime relative to the test file via
+    '__file__', constructs a precise pointer to 'pip_auditer.py', and programmatically
+    registers the module inside Python's core tracking network ('sys.modules'). This
     guarantees seamless, platform-agnostic testing capability.
 
 Mocking Paradigm & Zero-Dependency Execution:
-    To maintain rapid test execution and remove dependencies on real network interfaces 
-    or external package advisory databases, this suite implements strict subprocess 
-    isolation. By applying the '@patch' decorator, it intercepts low-level operating 
-    system execution hooks ('subprocess.run') and swaps them out for a customizable 
-    'MagicMock' instance. 
-    
-    This allows the developer to fake the standard output (stdout), standard error 
-    (stderr), and return code response payloads instantaneously, simulating real-world 
+    To maintain rapid test execution and remove dependencies on real network interfaces
+    or external package advisory databases, this suite implements strict subprocess
+    isolation. By applying the '@patch' decorator, it intercepts low-level operating
+    system execution hooks ('subprocess.run') and swaps them out for a customizable
+    'MagicMock' instance.
+
+    This allows the developer to fake the standard output (stdout), standard error
+    (stderr), and return code response payloads instantaneously, simulating real-world
     vulnerability scenarios entirely within local runtime memory.
 
 Assertion Matrix & Signal Interception:
-    Because the security tool terminates execution threads using 'sys.exit()' to force 
-    failures inside CI/CD environments when security risks are discovered, testing 
-    must cleanly isolate these termination requests before they kill the test runner. 
-    
-    Test executions are wrapped inside a 'self.assertRaises(SystemExit)' context 
-    manager. This traps the termination signal, intercepts the underlying integer exit 
+    Because the security tool terminates execution threads using 'sys.exit()' to force
+    failures inside CI/CD environments when security risks are discovered, testing
+    must cleanly isolate these termination requests before they kill the test runner.
+
+    Test executions are wrapped inside a 'self.assertRaises(SystemExit)' context
+    manager. This traps the termination signal, intercepts the underlying integer exit
     status code, and validates it against expected DevSecOps pipeline outcomes:
         * Exit Code 0: Confirmed clean pass condition when all project packages are safe.
-        * Exit Code 1: Confirmed pipeline freeze condition when vulnerabilities or missing 
+        * Exit Code 1: Confirmed pipeline freeze condition when vulnerabilities or missing
           dependencies are encountered.
 """
 

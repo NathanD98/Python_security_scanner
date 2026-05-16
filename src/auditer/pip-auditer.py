@@ -1,23 +1,23 @@
 """Automated Software Supply Chain Dependency Security Gate.
 
-This module provides a standalone, automated utility to audit Python project 
-dependencies for known Common Vulnerabilities and Exposures (CVEs). It uses the 
-PyPA-recommended 'pip-audit' engine to parse a local 'requirements.txt' file 
+This module provides a standalone, automated utility to audit Python project
+dependencies for known Common Vulnerabilities and Exposures (CVEs). It uses the
+PyPA-recommended 'pip-audit' engine to parse a local 'requirements.txt' file
 and cross-reference packages against the Python Packaging Advisory Database.
 
 Design Architecture & Cross-Platform Reliability:
-    To bypass strict permission boundaries, path shielding, and file execution 
+    To bypass strict permission boundaries, path shielding, and file execution
     isolation common to Windows Store Python installations, the script executes
     the underlying security engine natively as an internal module via:
     `sys.executable -m pip_audit`
-    
-    This ensures that if the executing Python environment contains the package, 
+
+    This ensures that if the executing Python environment contains the package,
     the system shell boundaries are bypassed without needing 'shell=True'.
 
 CI/CD Pipeline Integration:
-    The script abstracts standard output into structured JSON streams. If any 
+    The script abstracts standard output into structured JSON streams. If any
     vulnerabilities are identified, it explicitly prints the data block and
-    terminates with an exit code of 1, providing a definitive hard-stop 
+    terminates with an exit code of 1, providing a definitive hard-stop
     gate mechanism for DevSecOps continuous integration pipelines.
 """
 
