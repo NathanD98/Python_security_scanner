@@ -2,6 +2,52 @@
 A highly configurable command-line utility designed to audit repositories and local directories for leaked credentials, API keys, and hardcoded passwords using the 'detect_secrets' core analysis plugins.
 Here is a comprehensive, professional README.md for your script. It covers everything from installation to production deployment, and includes a detailed Contributing section structured around the Gitflow branching model.
 
+```mermaid
+graph TD
+    %% Styling Definitions
+    classDef startEnd fill:#2d3748,stroke:#1a202c,stroke-width:2px,color:#fff;
+    classDef process fill:#edf2f7,stroke:#cbd5e0,stroke-width:1px,color:#2d3748;
+    classDef condition fill:#feebc8,stroke:#fbd38d,stroke-width:1px,color:#744210;
+    classDef alert fill:#fed7d7,stroke:#feb2b2,stroke-width:1px,color:#9b2c2c;
+    classDef success fill:#c6f6d5,stroke:#9ae6b4,stroke-width:1px,color:#22543d;
+
+    %% Diagram Logic
+    A([Start: Execute Script]) --> B[Parse CLI Arguments]
+    B --> C{Is target_dir valid?}
+    
+    C -- No --> D[Log Error & Exit 1]:::alert
+    C -- Yes --> E[Initialize SecretsCollection & Load Default Plugins]:::process
+    
+    E --> F[Begin os.walk Traversal]:::process
+    F --> G[Prune Ignored Directories<br>e.g., .git, node_modules]:::process
+    
+    G --> H[Get Next File Path]:::process
+    H --> I{Can File Be Read?<br>Check Permissions/Encoding}
+    
+    I -- No / Exception --> J[Log Debug & Skip File]:::process
+    J --> K{More Files Left?}
+    
+    I -- Yes --> L[Execute secrets.scan_file]:::process
+    L --> K
+    
+    K -- Yes --> H
+    K -- No --> M[Compile Findings to JSON]:::process
+    
+    M --> N{Are Secrets Found?}
+    
+    N -- No --> O[Print Success Summary]:::success
+    O --> P([Exit Code 0]):::startEnd
+    
+    N -- Yes --> Q[Print Warning & Matrix Report]:::alert
+    Q --> R([Exit Code 1]):::startEnd
+
+    %% Apply Classes
+    class A,P,R startEnd;
+    class B,E,F,G,H,J,L,M process;
+    class C,I,K,N condition;
+    class D,Q alert;
+    class O success;
+```
 Secret Scanner CLI
 A robust, PEP 8-compliant command-line utility designed to scan local directories and repositories recursively for leaked credentials, API keys, and hardcoded secrets. Powered by the detect-secrets analysis engine, this script is optimized for standalone use or integration into CI/CD pipelines.
 
