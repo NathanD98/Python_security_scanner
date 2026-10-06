@@ -1,6 +1,6 @@
 # Python_security_scanner
 A highly configurable command-line utility designed to audit repositories and local directories for leaked credentials, API keys, and hardcoded passwords using the 'detect_secrets' core analysis plugins.
-Here is a comprehensive, professional README.md for your script. It covers everything from installation to production deployment, and includes a detailed Contributing section structured around the Gitflow branching model.
+
 
 ```mermaid
 graph TD
